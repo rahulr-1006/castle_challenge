@@ -217,7 +217,7 @@ unless noted.
 
 ## 9. Engineering
 
-- 80 tests covering rules, ties, the scraper, anchors, tilting, the ensemble, newcomer tracking and
+- 87 tests covering rules, ties, the scraper, anchors, tilting, the ensemble, newcomer tracking and
   test-entry comparisons.
 - **Bugs caught along the way:**
   - the tilt ran too few iterations

@@ -7,12 +7,17 @@ this repo, and it's where the score improved.
 
 | | Blind pick | Score, rank | Final pick | Score, rank |
 |---|---|---|---|---|
-| **Game 1** (head to head) | 8-17-30-44-1 | 8.68, #1,132 | **4-7-35-47-7** | **9.287, #30** of 5,904 |
-| **Game 2** (4-player groups) | 18-8-2-2-70 | 5.03, ~#700 | **16-2-2-2-78** | **5.68, ~#110-155** of 5,375 |
+| **Game 1** (head to head) | 8-17-30-44-1 | 8.68, #1,140 | **4-7-35-47-7** | **9.288, #30** of 5,915 |
+| **Game 2** (4-player groups) | 18-8-2-2-70 | 5.00-5.05, ~#700 | **16-2-2-2-78** | **5.62-5.70, #110-173** of 5,394 |
 
-Scores are from the live board on Nov 8, 2026. Both picks are scored against the same field. The
-top scores were 9.310 and about 5.85. Game 2 scores are averaged over several board updates
-because the site re-simulates them each time (see below).
+Scores are from the live board on Nov 8, 2026 (last update 19:51 UTC). Both picks are scored
+against the same field. The top scores were 9.312 and about 5.83.
+
+- **Game 1 is stable.** The final split has scored 9.287-9.288 and ranked #29-30 on every board
+  since it went in. 18 other entries share its exact score, so it's tied for #30.
+- **Game 2 isn't.** The site re-simulates Game 2 with fresh random groups at every update, and
+  the field is packed tight around this score. The same entry has ranked anywhere from #110 to
+  #173 (see [Why Game 2 was so hard](#why-game-2-was-so-hard)).
 
 ## The rules
 
@@ -22,6 +27,89 @@ You allocate 100 soldiers across five castles worth 1-5 points (15 total).
   ties split it. Your score is your average points per matchup.
 - **Game 2:** random groups of four. The most soldiers takes each castle, then players are ranked by
   points and paid 9 / 4 / 2 / 0, with ties splitting payouts.
+
+## The math
+
+**Game 1 separates by castle.** Let $X_c$ be the soldiers a random opponent sends to castle $c$,
+and $v_c = c$ its value. Against a field, a split $a$ scores
+
+$$S(a) = \sum_{c=1}^{5} v_c\, G_c(a_c), \qquad G_c(x) = \Pr(X_c < x) + \tfrac{1}{2}\Pr(X_c = x).$$
+
+Only the five per-castle distributions matter, so the exact best response is a knapsack over the
+castles:
+
+$$B_k(t) = \max_{0 \le s \le t} \Big[ B_{k-1}(t-s) + v_k\, G_k(s) \Big], \qquad S^{*} = B_5(100).$$
+
+That's cheap, and it's checked against all $\binom{104}{4} = 4{,}598{,}126$ legal splits.
+
+**One-soldier tests are exact.** Moving one soldier from castle $i$ to castle $j$ changes the
+score by
+
+$$\Delta_{i \to j} = v_j \Big[ G_j(a_j + 1) - G_j(a_j) \Big] - v_i \Big[ G_i(a_i) - G_i(a_i - 1) \Big].$$
+
+Moves on different castles add: $S(a + \delta_1 + \delta_2) = S(a + \delta_1) + S(a + \delta_2) - S(a)$.
+That's how 3-6-36-48-7 gets scored without an entry (below).
+
+**Player models.**
+
+- Thinking levels follow a Poisson distribution, $f(k) = e^{-\tau}\tau^k / k!$. Level $k$
+  best-responds to levels $0, \dots, k-1$, mixed in proportion to $f$. This is the cognitive
+  hierarchy model.
+- Noisy players use a logit response over all 4.6M splits, $p(a) \propto e^{\lambda S(a)}$. It's
+  computed exactly by the same knapsack with $(\max, +)$ swapped for $(\mathrm{logsumexp}, +)$.
+- The equilibrium comes from fictitious play. Game 1 is constant-sum with value 7.5, so
+  $\varepsilon_t = \max_a S(a; \bar\sigma_t) - 7.5$ measures how exploitable the average strategy
+  still is.
+
+**Choosing a split without knowing the world.** Worlds $\omega$ have prior weights $\pi_\omega$.
+A split's regret in a world is $R_\omega(a) = \max_{a'} S_\omega(a') - S_\omega(a)$. Three ways to
+pick:
+
+$$a_{\text{Bayes}} = \arg\max_a \sum_\omega \pi_\omega S_\omega(a), \qquad
+a_{\text{minimax regret}} = \arg\min_a \max_\omega R_\omega(a), \qquad
+a_{\text{maximin}} = \arg\max_a \min_\omega S_\omega(a).$$
+
+**Fitting a world to anchors (exponential tilting).** Let $u(a, b)$ be the points $a$ takes head
+to head from $b$. A Game 1 score is linear in the field's weights, so each anchor $(a_j, s_j)$ is a
+linear constraint. Of all fields that match the anchors, take the one closest to the prior:
+
+$$\min_w \ \mathrm{KL}(w \,\|\, \pi) \quad \text{s.t.} \quad \sum_b w_b\, u(a_j, b) = s_j \ \text{ for every } j
+\qquad \Longrightarrow \qquad w_b \propto \pi_b \exp\Big( \sum_j \theta_j\, u(a_j, b) \Big).$$
+
+Each $\theta_j$ is solved by safeguarded Newton. The constraint's derivative in $\theta_j$ is
+$\mathrm{Var}_w[u(a_j, \cdot)]$. The solver cycles over the anchors until all of them hold.
+
+**Weighting worlds.** Refit each world $m$ without anchor $j$, predict that anchor, and call the
+error $e_{mj}$. Then
+
+$$\omega_m \propto \exp\Big( -\frac{1}{2\sigma^2} \sum_j e_{mj}^2 \Big), \qquad \sigma = 0.5.$$
+
+**Reading newcomers from score changes.** A Game 1 score averages over the other $N - 1$ entries.
+When $k$ entries join between snapshots, an anchor's total moves by exactly its points against
+them:
+
+$$(N_t - 1)\, s_t - (N_0 - 1)\, s_0 = \sum_{b \in \text{new}} u(a, b).$$
+
+Dividing by $k$ gives the anchor's average result against the newcomers. The site rounds scores to
+3 decimals, so this read has standard error
+$\sqrt{(N_0 - 1)^2 + (N_t - 1)^2} \cdot \frac{0.001}{\sqrt{12}} \big/ k$. That's about 0.1 for
+26 newcomers, and it shrinks as $1/k$. The reads are fit with a soft version of the tilt,
+
+$$\min_w \ \mathrm{KL}(w \,\|\, \pi) + \sum_a \frac{\big( \mathbb{E}_w[u_a] - m_a \big)^2}{2\, \mathrm{sd}_a^2},$$
+
+solved in its dual by damped Newton.
+
+**Game 2.**
+
+- Castle points total 15, so more than 7.5 points guarantees first place. Sweeping any set of
+  castles worth 8 or more (like {5, 3} or {4, 3, 1}) locks in the 9 payout.
+- Beyond that there's no closed form, because payout depends on rank among four players. Splits
+  were found by search.
+- The phase 1 equilibrium started with replicator dynamics, $x_i \leftarrow x_i\, e^{\eta (u_i - \bar u)}$.
+  Then it switched to fictitious play with a search-based best response.
+- Live Game 2 scores are averaged over distinct board updates, with standard error
+  $\hat\sigma / \sqrt{n}$. A gap between two splits counted only if it beat the update-to-update
+  noise of about 0.02.
 
 ## Phase 1: simulating the field (blind)
 
@@ -34,8 +122,26 @@ allocations can be checked. I modeled the field as a mix of:
 - equilibrium players (fictitious play, which matches the known continuous Blotto solution)
 - crowd-modelers
 
-That gave 180 "worlds", which I weighted with a prior. The answer was to concede castle 5 and win
-the other four (8-17-30-44-1). The full study is in `sim/experiments.py` and `results/simulation/`.
+That gave 180 "worlds", which I weighted with a prior. I wrote two priors: a sharp main one and a
+skeptical baseline. The full study is in `sim/experiments.py` and `results/simulation/`.
+
+- **Regret.** I scored every split in every world, then compared the three choice rules from
+  [The math](#the-math).
+  - The Bayes pick (8-17-30-44-1, 8.69 expected) and the minimax-regret pick (5-19-31-45-0, 8.63)
+    both conceded castle 5.
+  - The maximin pick (5-5-28-44-18) hedged with 18 on castle 5 and lost 0.74 on average.
+  - I went with Bayes.
+- **Crossover.** A shallow enough field flips the answer to stacking castle 5. That bet was
+  lopsided, though: conceding castle 5 cost 0.08 if wrong, and stacking it cost 0.60.
+- **Focal points.** One soldier above crowded round numbers flips many castles. That idea came
+  back later as "one above the cluster."
+- **Game 2.** I tried replicator dynamics on a fixed pool of plans. Its equilibrium stayed
+  exploitable: a best response beat it by 3.7 payout points. Fictitious play with a search-based
+  best response cut that gap to 0.38.
+- **Counter-players.** I added players one level above the crowd-modelers, at 10% and 25% of the
+  field. Game 1 held up. Game 2 slipped at 25%.
+
+The answer was to concede castle 5 and win the other four (8-17-30-44-1).
 
 It got the *shape* of the answer right, but it missed by about 0.6 points. The real field doesn't
 spread out smoothly. It bunches on a few exact numbers, and you can only see that in real data.
@@ -206,6 +312,10 @@ Game 1 improved by about 0.6 points through careful measurement. Game 2 fought b
 - **The board is noisy.** Game 2 scores are re-simulated with fresh random groups at every update,
   so the same entry moves about ±0.02 between updates. Each test needed 3+ updates to read
   reliably, compared with one exact read in Game 1.
+- **Ranks swing more than scores.** Around 5.65 the field is packed: ranks 101-154 span only 0.053
+  points. So 16-2-2-2-78 has scored 5.62-5.70 but ranked anywhere from #110 to #173. A batch of
+  test entries from one team landing just above it accounted for about 11 of those places. The
+  blind pick swings the same way, between #681 and #726.
 - **It has cliffs.** 20-2-2-2-74 averaged 5.45 and 20-0-0-0-80 averaged **2.92**. Taking the 2s off
   castles 2-4 cost 2.5 points. Many castle-5 stackers leave the middle castles at 0-1, so 2 soldiers
   win them. Without the 2s you can't get much past 6 points, and anyone who puts 1s on the middle
@@ -234,6 +344,153 @@ Game 2 is a race for castle 5 among the people who stack it, with cheap 2s to sw
 castles they leave empty. The race was still paying at 78. 82 was the next step, but I didn't submit
 anything untested in a game with cliffs like that.
 
+## After the deadline: can you read other players' splits off the board?
+
+An idea I didn't get to during the challenge: use the anchors and fitted worlds to infer what
+*other* entries played, with a confidence score, from nothing but their Game 1 score. Knowing the
+#1 split, for instance, would have been worth testing against. I built it afterwards in
+`live/infer_splits.py`.
+
+### The method
+
+Every fitted world $m$ predicts the score $S_m(a)$ of all 4.6M splits and says how common each
+split is, $w_m(a)$. For an entry with board score $s$:
+
+$$P(a \mid s) \;\propto\; \sum_m \pi_m \Big[ (1 - \epsilon)\, w_m(a) + \frac{\epsilon}{4.6\text{M}} \Big] \, \mathcal{N}\big(s;\ S_m(a),\ \sigma^2\big).$$
+
+- $\pi_m$ is the world's holdout weight.
+- The floor $\epsilon$ lets a split the library never sampled win if its score fits better.
+- $\sigma$ is the model's score error.
+- Splits with a measured score (anchors) get an exact likelihood instead: certain at their own
+  score, impossible anywhere else.
+
+Sorting each world's 4.6M predicted scores once makes every query a single slice. That made it a
+few seconds of compute, not the long grid search I expected.
+
+$\epsilon$ and $\sigma$ are tuned per rank band on 8 synthetic boards with a known field. Each
+board has anchors shaped like mine: five corners, a posted split, and 10 test entries climbing
+from it. The settings are tuned by log score of the true split, a proper scoring rule, so
+confident misses are punished. Then they're tested on the 23 real anchors, each held out in
+turn. The real anchors are never used for tuning.
+
+### Is the information there? Yes, at the top
+
+With the *true* field known, I counted how many legal splits share each entry's rounded score on
+synthetic boards:
+
+| Ranks | Legal splits sharing the score (median) |
+|---|---|
+| 1-10 | **1** |
+| 11-50 | 2-3 |
+| 51-200 | 9-10 |
+| 201-1000 | 50-72 |
+| 1001-3000 | 790-940 |
+| 3001+ | about 1,280 |
+
+So a perfect model could name the exact split of each top-10 entry from its score alone. That
+needs predicted scores good to about 0.0005, though, the site's rounding.
+
+### Can this model read it? No
+
+With each real anchor held out, the fitted worlds missed its score by 0.006-0.06 points near the
+top (ranks 32-394) and 0.06-0.63 below. Even where my test entries were densest, that's about 60×
+too coarse. The posterior spreads over about 150 plausible splits at the top and thousands
+mid-board.
+
+| Synthetic, by rank | Exact split right | Best guess within 1 soldier | Stated confidence | 90% castle ranges cover truth | Range width | Concede-5 vs stack-5 right |
+|---|---|---|---|---|---|---|
+| 1-10 | 12% | 57% | 7% | 94% | 13 | 88% |
+| 11-50 | 2% | 32% | 7% | 91% | 12 | 88% |
+| 51-200 | 0% | 2% | 3% | 97% | 19 | 100% |
+| 201-1000 | 0% | 0% | 3% | 94% | 28 | 93% |
+| 1001-3000 | 7% | 8% | 7% | 97% | 33 | 92% |
+| 3001+ | 13% | 13% | 18% | 91% | 36 | 77% |
+
+- **Real anchors held out:** 1 exact hit in 23, and that was `100-0-0-0-0`, the only split that
+  scores that low. 2 of the 23 had a best guess within one soldier.
+- **Castle ranges:** the 90% ranges covered 91% of real castles, but they averaged 27 soldiers
+  wide near the top.
+- **Concede-castle-5 call:** it pointed the right way for 9 of 10 near-top anchors, but mostly at
+  52-56%, barely better than a coin flip.
+- **Calibration:** stated confidence is honest, slightly *below* the actual hit rate. It's just
+  low.
+
+### What it says about the top of the board
+
+| Board | Best guess | P(exact) | P(within 1 soldier) | 90% range per castle | P(concede castle 5) |
+|---|---|---|---|---|---|
+| #1, 9.311 (7 tied) | 3-11-33-46-7 | 4% | 15% | 2-7 / 6-11 / 32-36 / 2-48 / 6-57 | 86% |
+| #32, 9.286 (19 tied) | 4-7-35-47-7 | 70% | 74% | known split | 94% |
+| #124, 9.227 (23 tied) | 5-7-35-47-6 | 83% | 83% | known split | 92% |
+
+The #1 split probably has 2-7, 6-11 and 32-36 on castles 1-3. Castles 4 and 5 aren't resolved:
+they're either about 46 and 7, or about 2 and 56. The measured clusters come back right only
+because their splits are anchors.
+
+Before the exact-anchor rule, the model put the posted 5-7-35-47-6 at #1. That split is known to
+score 9.227, 0.084 below #1. A wide error bar plus a big prior weight is enough to claim a split
+you've already measured somewhere else. Measured splits now only count at their measured score.
+
+**Takeaway:** the board holds enough information to name the top splits. Reading it would need a
+field model about 60× more precise than one built from 23 anchors. One input I didn't use is
+cluster size. A 35-way exact tie mid-board is almost certainly a copied chatbot or round-number
+split, but the model ignores how many entries share a score. Modeling that would help the big
+mid-board clusters, not the top.
+
+## Everything I tried
+
+**Kept** means it shaped the final picks, **Dropped** means I abandoned it, and **Check** means it
+ran as a sanity check without deciding anything. More detail on each is in
+[`docs/everything_we_tried.md`](docs/everything_we_tried.md).
+
+| Method | Verdict | What happened |
+|---|---|---|
+| **Phase 1: theory and simulation** | | |
+| Exhaustive search + exact knapsack best response | Kept | Used everywhere |
+| Fictitious play for the Game 1 equilibrium | Kept | Matches the known continuous Blotto solution |
+| Cognitive hierarchy + logit noise + habit players | Kept | Became the prior library for phase 2 |
+| 180 worlds under two written priors | Kept | Every weight came with a reason |
+| Bayes vs minimax-regret vs maximin selection | Kept (Bayes) | Maximin hedged castle 5 and lost 0.74 on average |
+| Crossover analysis on field depth | Kept | Conceding castle 5 was the safer bet (0.08 vs 0.60 if wrong) |
+| Focal-point steps | Kept | Became "one above the cluster" |
+| Replicator dynamics for Game 2 | Dropped | Exploitable by 3.7; fictitious play cut that to 0.38 |
+| Counter-player stress test | Check | Game 1 held; Game 2 slipped at 25% counter-players |
+| **Phase 2: inferring the field** | | |
+| Fitting the score histogram (EM over player types) | Dropped | Lost 1-2.5 points on synthetic boards |
+| Anchors + exponential tilting | Kept | About 40 anchors cut the loss to 0.02 |
+| Board-top constraint | Dropped as a selector | Predicted 9.316 for a split that measured 9.105 |
+| 12-world ensemble weighted by holdout error | Kept | Ranks candidates |
+| Soft anchors | Dropped | Redundant once hard anchors existed |
+| 300 hidden late-entrant scenarios | Kept | 100-600 entrants, 20-60% board-trackers |
+| Objective: P(#1) → mean score | Kept (switched) | Validation showed P(#1) was overconfident |
+| Histogram world matching (Wasserstein) | Check | Didn't change the pick |
+| Synthetic validation | Check | Ensemble median rank 161 vs oracle 34, so final picks came from measurements |
+| **Watching the crowd** | | |
+| Chatbot answers as their own population | Kept | No effect on the final choice |
+| Fingerprinting chatbot splits on the board | Check | Not significant (p ≈ 0.13) |
+| Copy-cluster tracking | Kept | Showed copying wasn't happening |
+| Newcomer tracking from anchor score changes | Kept | About 12% of newcomers tracked the board |
+| Level-k escalation off the posted split | Check | Cycles between conceding and stacking castle 5, not a ladder |
+| Searching online for the #1 split | Dropped | Never found it |
+| Cross-game fingerprinting | Check | Top Game 2 entries with Game 1 scores of 2.6-4.8 used a throwaway |
+| Leak check | Check | Largest exact tie in the Game 2 top 500 was 6 entries |
+| Decay check | Check | Game 1 drifted about −0.002 per hour |
+| **Test entries** | | |
+| A portfolio of 8 strong splits | Dropped | Replaced by one-change tests |
+| Value-of-information test design | Dropped | Favored splits that told worlds apart, not ones that could win |
+| One-soldier tests + separability | Kept | Exact measurements with no model |
+| Adaptive design (each test one step from the best) | Kept | Found 4-7-35-47-7 |
+| **Game 2 modeling** | | |
+| Averaging over board updates with standard errors | Kept | Fixed a bug where republished boards shrank the error bars |
+| Five-population mixture fit | Dropped | Top claim measured −0.15; best tweak had the wrong sign |
+| Common random numbers in simulation | Kept | Lower-variance comparisons between candidates |
+| Decide on measured scores only, gap > 0.02 | Kept | Picked 16-2-2-2-78 |
+| **After the deadline** | | |
+| Identifiability ceiling (true field, splits per rounded score) | Check | Top-10 scores each belong to one legal split |
+| Posterior over other entries' splits from their scores | Negative result | Honest confidence, but exact splits unreadable: model error 0.03 vs 0.0005 needed |
+| Exact likelihood for measured splits | Kept (fix) | Stopped the model claiming a measured split at the wrong score |
+| Cluster size as evidence of a copied split | Untried | Next lever, for mid-board copy clusters only |
+
 ## What I'd take away
 
 - Measure the field instead of modeling it, whenever the scoring lets you. Separable scoring turns
@@ -259,7 +516,9 @@ live/                   leaderboard pipeline
   strategy.py           runs the pipeline on the newest snapshot
   game2.py              Game 2 anchor averaging and mixture fit
   validate.py           synthetic-leaderboard validation
-tests/                  80 tests
+  infer_splits.py       posterior over other entries' splits (after the deadline)
+tests/                  87 tests
+docs/                   everything_we_tried.md: full log of every method, kept or dropped
 results/simulation/     phase 1 outputs (baseline/ holds a more skeptical prior)
 results/live/           measured splits and validation results
 data/                   gitignored: raw snapshots (thousands of students' names), anchor ids
@@ -274,6 +533,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m live.scrape_leaderboard --once       # one snapshot -> data/snapshots/
 .venv/bin/python -m live.strategy --once                 # needs data/anchors.csv
 .venv/bin/python -m live.validate --trials 12            # -> results/live/validation.csv
+.venv/bin/python -m live.infer_splits --validate --infer # ~30 min; needs data/anchors.csv
 ```
 
 `data/anchors.csv` has columns `board_id,game,label,alloc,source` and isn't committed, because it
