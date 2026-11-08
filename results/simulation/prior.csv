@@ -1,0 +1,16 @@
+axis,value,weight,reason
+tau,1.5,0.1,Floor: even a sharp pool has people who answer a 3-minute optional question quickly.
+tau,2.0,0.2,Sharp applicants who stop at 'beat the people who beat the obvious split'.
+tau,2.5,0.35,Core belief: Sequoia / OpenAI / Citadel draws a pool where most think 2-3 levels deep.
+tau,3.0,0.25,"Priority registration rewards top scores, so many will think harder than usual."
+tau,4.0,0.1,Tail: a pool where level 4+ is common.
+eq,0.0,0.25,"Even in a sharp pool, few recall the Blotto equilibrium under time pressure."
+eq,0.1,0.45,Quant applicants who know the theory randomize around proportional.
+eq,0.25,0.3,A pool selected for game theory has many equilibrium players.
+meta,0.0,0.15,Unlikely that nobody models the crowd in a pool this competitive.
+meta,0.1,0.45,A motivated minority models the field for priority registration.
+meta,0.25,0.4,Sharp pool: many will do some version of this analysis.
+level0,focal,0.8,Whoever doesn't think still piles onto round numbers.
+level0,random,0.2,"Textbook uniform level 0, kept as a stress test."
+noise,low,0.6,Sharp players mostly get their arithmetic right.
+noise,high,0.4,Three minutes still makes some of them sloppy.

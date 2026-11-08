@@ -1,0 +1,16 @@
+axis,value,weight,reason
+tau,0.5,0.15,Optional 3-minute question: many applicants answer on autopilot.
+tau,1.0,0.3,Most who think at all stop after one step: beat the obvious split.
+tau,1.5,0.3,"Typical lab estimate (Camerer, Ho and Chong 2004); a technical pool should reach it."
+tau,2.0,0.15,Sequoia / OpenAI / Citadel applicants skew quantitative and competitive.
+tau,3.0,0.1,Tail: priority registration draws a motivated subset that thinks several steps ahead.
+eq,0.0,0.4,Few people derive or recall the Blotto equilibrium in 3 minutes.
+eq,0.1,0.45,Some quant applicants know it (randomize around proportional) and use it as a safe default.
+eq,0.25,0.15,A pool selected for game theory could hold many equilibrium players.
+meta,0.0,0.35,Modeling the crowd takes far more than 3 minutes; most won't.
+meta,0.1,0.45,"Top scores earn priority registration, so a motivated minority will model the field."
+meta,0.25,0.2,Stress case: a pool full of people doing exactly this analysis.
+level0,focal,0.8,People in Blotto-style contests pile onto round numbers and simple shapes.
+level0,random,0.2,"Textbook uniform level 0, kept as a stress test of that assumption."
+noise,low,0.4,Players who take the time to check their arithmetic.
+noise,high,0.6,"Three minutes and no computer: most strategic players will be roughly, not exactly, right."

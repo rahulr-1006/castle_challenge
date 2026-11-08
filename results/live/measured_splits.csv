@@ -1,0 +1,45 @@
+board,game,split,score,rank,entries,source
+2026-11-08T06:36:51Z,game1,4-7-35-47-7,9.287,30,5904,test entry
+2026-11-08T06:36:51Z,game1,3-7-36-47-7,9.277,57,5904,test entry
+2026-11-08T06:36:51Z,game1,4-6-35-48-7,9.241,109,5904,test entry
+2026-11-08T06:36:51Z,game1,5-7-35-47-6,9.23,120,5904,split posted publicly
+2026-11-08T06:36:51Z,game1,2-8-35-48-7,9.204,173,5904,test entry
+2026-11-08T06:36:51Z,game1,2-8-35-47-8,9.177,202,5904,test entry
+2026-11-08T06:36:51Z,game1,2-8-35-49-6,9.133,254,5904,test entry
+2026-11-08T06:36:51Z,game1,4-8-27-3-58,9.105,295,5904,test entry
+2026-11-08T06:36:51Z,game1,2-8-35-50-5,9.063,347,5904,test entry
+2026-11-08T06:36:51Z,game1,1-8-35-47-9,9.036,390,5904,test entry
+2026-11-08T06:36:51Z,game1,3-5-27-2-63,8.949,557,5904,split published in a GitHub repo
+2026-11-08T06:36:51Z,game1,1-1-1-41-56,8.812,814,5904,split published in a GitHub repo
+2026-11-08T06:36:51Z,game1,5-16-26-1-52,8.764,933,5904,split published in a GitHub repo
+2026-11-08T06:36:51Z,game1,10-16-25-45-4,8.703,1079,5904,split published in a GitHub repo
+2026-11-08T06:36:51Z,game1,8-17-30-44-1,8.683,1132,5904,my original entry
+2026-11-08T06:36:51Z,game1,33-7-1-10-49,7.054,3913,5904,test entry
+2026-11-08T06:36:51Z,game1,1-0-21-31-47,6.767,4589,5904,split published in a GitHub repo
+2026-11-08T06:36:51Z,game1,1-47-19-3-30,6.009,5212,5904,test entry
+2026-11-08T06:36:51Z,game1,0-0-0-0-100,5.616,5266,5904,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game1,0-0-0-100-0,4.73,5470,5904,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game1,0-0-100-0-0,3.797,5613,5904,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game1,0-100-0-0-0,2.839,5828,5904,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game1,100-0-0-0-0,1.93,5901,5904,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game2,16-2-2-2-78,5.638,155,5375,test entry
+2026-11-08T06:36:51Z,game2,20-2-2-2-74,5.418,351,5375,test entry
+2026-11-08T06:36:51Z,game2,20-2-3-3-72,5.344,423,5375,test entry
+2026-11-08T06:36:51Z,game2,14-8-2-2-74,5.334,429,5375,test entry
+2026-11-08T06:36:51Z,game2,13-38-49-0-0,5.204,543,5375,test entry
+2026-11-08T06:36:51Z,game2,18-8-2-2-70,5.016,707,5375,my original entry
+2026-11-08T06:36:51Z,game2,0-0-0-0-100,4.833,987,5375,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game2,0-1-42-56-1,4.82,1099,5375,split published in a GitHub repo
+2026-11-08T06:36:51Z,game2,0-37-0-60-3,4.623,1432,5375,test entry
+2026-11-08T06:36:51Z,game2,12-17-0-0-71,4.613,1464,5375,split published in a GitHub repo
+2026-11-08T06:36:51Z,game2,2-34-3-59-2,4.375,1912,5375,split published in a GitHub repo
+2026-11-08T06:36:51Z,game2,0-32-0-0-68,3.941,2378,5375,test entry
+2026-11-08T06:36:51Z,game2,0-0-0-100-0,3.363,3015,5375,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game2,0-0-48-52-0,3.234,3498,5375,split published in a GitHub repo
+2026-11-08T06:36:51Z,game2,0-0-41-0-59,3.115,3841,5375,test entry
+2026-11-08T06:36:51Z,game2,20-0-0-0-80,2.931,4073,5375,test entry
+2026-11-08T06:36:51Z,game2,19-37-0-44-0,2.679,4317,5375,test entry
+2026-11-08T06:36:51Z,game2,10-9-12-37-32,2.53,4601,5375,test entry
+2026-11-08T06:36:51Z,game2,0-0-100-0-0,2.096,5120,5375,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game2,0-100-0-0-0,1.039,5352,5375,all-in-one-castle entry (found online)
+2026-11-08T06:36:51Z,game2,100-0-0-0-0,0.552,5365,5375,all-in-one-castle entry (found online)

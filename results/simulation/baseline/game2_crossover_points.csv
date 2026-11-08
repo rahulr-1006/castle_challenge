@@ -1,0 +1,3 @@
+from,to,tau
+"sweep {2, 5}: DP vs prior field","local search from sweep {2, 5}: DP vs prior field",0.6894076759102244
+"local search from sweep {2, 5}: DP vs prior field","local search from sweep {1, 5}: DP vs prior field",1.5669842185158418
