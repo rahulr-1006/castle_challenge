@@ -5,6 +5,32 @@ phases. First I simulated the field and picked an allocation blind. Then I found
 leaderboard and switched to measuring the field instead of modeling it. The second phase is most of
 this repo, and it's where the score improved.
 
+## Final results
+
+| | Peak on the live board | Final rank | Final score | Final #1 score |
+|---|---|---|---|---|
+| **Game 1** (head to head) | **#16** | **#70** | 9.25 | 9.29 |
+| **Game 2** (4-player groups) | **#160** | **#638** (team), #659 (mine) | 5.19 (team), 5.18 (mine) | 5.66 |
+
+My teammate Jay Katyan and I entered as a team. Our best Game 2 finish was Jay's entry at #638.
+
+<p>
+  <img src="docs/img/final_game1_rank70.png" alt="Final Game 1 card: #70, score 9.25" width="49%">
+  <img src="docs/img/final_game2_rank638_team.png" alt="Final Game 2 card: #638, score 5.19" width="49%">
+</p>
+
+**Game 1 held up.** The final score of 9.25 sits 0.04 below #1, and 69 entries finished above it. The
+measured split peaked at #16 on the live board. It slipped to #70 as late entries arrived.
+
+**Game 2 didn't.** On the live board the final pick scored 5.62-5.70. In final scoring it got 5.18,
+about where the blind pick had been on the live board. The #1 score also fell, from about 5.83
+to 5.66. A Game 2 score depends on which three opponents you're grouped with, so the final field
+and final groups decided it. My measurements on the live board didn't carry over. Game 1 scoring
+separates by castle and doesn't have this problem
+(see [Why Game 2 was so hard](#why-game-2-was-so-hard)).
+
+### On the live board (Nov 8, before the deadline)
+
 | | Blind pick | Score, rank | Final pick | Score, rank |
 |---|---|---|---|---|
 | **Game 1** (head to head) | 8-17-30-44-1 | 8.68, #1,140 | **4-7-35-47-7** | **9.288, #30** of 5,915 |
@@ -499,6 +525,9 @@ ran as a sanity check without deciding anything. More detail on each is in
 - Agreement inside an ensemble isn't evidence. All 12 worlds agreed and were wrong.
 - Check strategic assumptions against the data before paying for them. The anti-copier argument
   sounded right, but the copy clusters weren't growing.
+- A measurement only carries over to the final standings if the scoring is deterministic. Game 1's
+  measured edge mostly survived (#70 of about 6,000). Game 2's live-board gains depended on the pool
+  at the time and on random groupings, and they didn't hold up in final scoring.
 
 ## Repo layout
 
@@ -519,6 +548,7 @@ live/                   leaderboard pipeline
   infer_splits.py       posterior over other entries' splits (after the deadline)
 tests/                  87 tests
 docs/                   everything_we_tried.md: full log of every method, kept or dropped
+  img/                  final leaderboard cards
 results/simulation/     phase 1 outputs (baseline/ holds a more skeptical prior)
 results/live/           measured splits and validation results
 data/                   gitignored: raw snapshots (thousands of students' names), anchor ids
