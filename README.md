@@ -10,7 +10,7 @@ this repo, and it's where the score improved.
 | | Peak on the live board | Final rank | Final score | Final #1 score |
 |---|---|---|---|---|
 | **Game 1** (head to head) | **#16** | **#70** | 9.25 | 9.29 |
-| **Game 2** (4-player groups) | **#160** | **#638** (team), #659 (mine) | 5.19 (team), 5.18 (mine) | 5.66 |
+| **Game 2** (4-player groups) | **#160** | **#638** (team) | 5.19 (team) | 5.66 |
 
 My teammate Jay Katyan and I entered as a team. Our best Game 2 finish was Jay's entry at #638.
 
