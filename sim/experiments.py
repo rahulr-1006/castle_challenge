@@ -33,7 +33,7 @@ NOISE = {"low": (8.0, 4.0), "high": (3.0, 1.0)}
 MAX_LEVEL = 8  # Poisson tail beyond this is pooled; it holds 2% of players at tau = 4
 
 # Priors over worlds. Axes are treated as independent; each weight carries its
-# reason. "sharp" is the main one (results/simulation/); "baseline" is my first, more
+# reason. "sharp" is the main one (results/simulation/); "baseline" is our first, more
 # skeptical prior, kept for comparison (results/simulation/baseline/). Edit and rerun.
 PRIORS = {}
 PRIORS["sharp"] = {
@@ -318,7 +318,7 @@ def run_game1(worlds, rng, sizes):
         for k in (1, 2, 3):
             cands.add(f"CH level {k} best response (tau={tau:g})", exact[k].argmax(axis=1))
 
-    # Decision principle test: how far above the field should I aim? CH levels
+    # Decision principle test: how far above the field should we aim? CH levels
     # best-respond to everything below them; the level-k chain only to the level
     # just below, so it can overshoot.
     level_rows = []

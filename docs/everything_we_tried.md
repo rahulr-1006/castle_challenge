@@ -1,7 +1,7 @@
-  # Everything I tried
+  # Everything we tried
 
-  A complete log of the methods behind this repo, roughly in the order I tried them, with what each
-  one did. **Kept** means it shaped the final picks, **Dropped** means I abandoned it (and why), and
+  A complete log of the methods behind this repo, roughly in the order we tried them, with what each
+  one did. **Kept** means it shaped the final picks, **Dropped** means we abandoned it (and why), and
   **Check** means it ran as a sanity check without deciding anything. Numbers are from the live board
   unless noted.
 
@@ -24,16 +24,16 @@
 
     **Kept** (they became the prior library for phase 2)
   - **180 worlds with a written prior.** Axes were depth, equilibrium share, crowd-modeler share,
-    level-0 style and noise. Every weight came with a reason. I built two priors: "sharp" (main)
+    level-0 style and noise. Every weight came with a reason. We built two priors: "sharp" (main)
     and "baseline" (skeptical). **Kept**
-  - **Regret-based selection.** For every allocation I computed its prior-expected score, its
+  - **Regret-based selection.** For every allocation we computed its prior-expected score, its
     worst-world score (maximin), its prior-weighted regret and its **minimax regret**:
     - the Bayes pick (8-17-30-44-1, 8.69 expected) and the minimax-regret pick (5-19-31-45-0, 8.63)
       both conceded castle 5
     - the maximin pick (5-5-28-44-18) hedged with 18 on castle 5 and lost 0.74 on average
 
-    I went with the Bayes pick. **Kept**
-  - **Crossover analysis.** I tracked how the best pick changes with field depth. A shallow field
+    We went with the Bayes pick. **Kept**
+  - **Crossover analysis.** We tracked how the best pick changes with field depth. A shallow field
     flips the answer to stacking castle 5, but the bet was lopsided: losing 0.08 if wrong one way,
     0.60 the other. **Kept**
   - **Focal-point steps.** One soldier above crowded round numbers flips many castles. **Kept**
@@ -43,7 +43,7 @@
   - **Replicator dynamics for the Game 2 equilibrium.** On a fixed pool of plans it stayed
     exploitable: a best response beat it by 3.7 payout points. Fictitious play with a search-based
     best response cut that gap to 0.38. **Dropped** for fictitious play.
-  - **Counter-player stress test.** I added players one level above the crowd-modelers (10% and 25%
+  - **Counter-player stress test.** We added players one level above the crowd-modelers (10% and 25%
     of the field). Game 1 held up. Game 2 slipped at 25%. **Check**
   - **Blind result:**
 
@@ -87,7 +87,7 @@
     - all-in-one-castle entries found online
     - a posted split confirmed by its 22-24-entry exact-tie cluster and by a second person's
       results card
-    - my original entry
+    - our original entry
     - test entries (section 6)
 
     **Kept**
@@ -95,16 +95,16 @@
     entries. **Kept**
   - **Exponential tilting** (the minimum-KL reweighting) of each world so it reproduces every anchor
     exactly, solved with Newton's method. An early version ran too few iterations and produced a
-    false "the anchors rule out this family" result. I caught it and fixed it. **Kept**
+    false "the anchors rule out this family" result. We caught it and fixed it. **Kept**
   - **Board-top constraint:** force each world's best response to reach the board's top score.
     It's the "pick the world where your best answer scores highest" idea. It predicted 9.316 for a
     stack-castle-5 split that measured 9.105. **Dropped** as a selector, **Check** only.
   - **Ensemble of 12 worlds** (3 depths × 4 population mixes), weighted by leave-one-out anchor
     error. Soft anchors were **Dropped** as redundant once hard anchors existed. **Kept**
-  - **Hidden late-entrant scenarios:** 300 draws of 100-600 entrants I can't see, 20-60% of them
+  - **Hidden late-entrant scenarios:** 300 draws of 100-600 entrants we can't see, 20-60% of them
     sharp board-trackers at levels 1-3, plus copiers of public splits. **Kept**
-  - **Objective.** I started with P(#1), counting ties. Validation showed P(#1) was overconfident,
-    so I **switched to mean score** (with P(top 10) reported). **Kept**
+  - **Objective.** We started with P(#1), counting ties. Validation showed P(#1) was overconfident,
+    so we **switched to mean score** (with P(top 10) reported). **Kept**
   - **Synthetic validation** over 12 trials. Median final rank:
 
     | Method | Median rank |
@@ -117,19 +117,19 @@
     | Copy the posted leader | 368 |
 
     **Check** (it's why the final picks came from measurements, not the model)
-  - **Histogram world matching.** I compared each world's simulated score distribution with the real
+  - **Histogram world matching.** We compared each world's simulated score distribution with the real
     board's (Wasserstein distance). Habit-heavy worlds fit worst (0.16-0.18) and sharp-heavy best
     (0.10). The pick didn't change. **Check**
 
   ## 4. LLM randomness
 
-  - **Chatbot answers as a population.** I collected 156 real chatbot answers to the prompt:
+  - **Chatbot answers as a population.** We collected 156 real chatbot answers to the prompt:
     - only 98 were distinct
     - 7-13-20-27-33 alone was 18%
     - the rest sat on "nice" arithmetic like 10-15-20-25-30
 
-    I modeled them as their own 10% population instead of as noise. **Kept**
-  - **Fingerprinting them on the board.** I matched predicted chatbot scores to exact-tie spikes.
+    We modeled them as their own 10% population instead of as noise. **Kept**
+  - **Fingerprinting them on the board.** We matched predicted chatbot scores to exact-tie spikes.
     10 of the top 20 answers landed within 0.003 of a spike, against about 7 by chance (p ≈ 0.13),
     so it wasn't significant. **Check**
   - **Effect on the final choice: none.** Chatbot splits put 30+ on castle 5, so every
@@ -137,7 +137,7 @@
 
   ## 5. Watching the crowd
 
-  - **Copy clusters.** Exact ties mean identical splits, so I tracked cluster sizes across every
+  - **Copy clusters.** Exact ties mean identical splits, so we tracked cluster sizes across every
     update. Over 9 hours:
     - the posted split's cluster stayed at 22-24
     - the cluster at 9.288 (later confirmed as 4-7-35-47-7) stayed at 15-16
@@ -150,7 +150,7 @@
   - **Level-k escalation off the posted split.** "Beat the leader" reasoning cycles between
     concede-castle-5 and stack-castle-5 (about 57 on castle 5). It doesn't climb steadily, so
     piling more onto castle 5 to stay ahead isn't a ladder. **Check**
-  - **Searched online for the #1 split.** I didn't find it. **Dropped**
+  - **Searched online for the #1 split.** We didn't find it. **Dropped**
   - **Teams running many test entries.** One team's 15 Game 1 entries all sit in the top 150, and
     they threw away Game 2. Another group concentrated on Game 2, and a third spread 10 entries
     widely. **Check**
@@ -165,10 +165,10 @@
 
   - **First plan: a portfolio of 8 strong splits.** **Dropped** in favor of designed one-change
     tests.
-  - **Value-of-information design (expected-regret minimization).** I greedily chose the test that
+  - **Value-of-information design (expected-regret minimization).** We greedily chose the test that
     most reduced the expected regret of the final pick across 36 ensemble fields. It favored splits
     that told the worlds apart, not splits that could win. Since the worlds had all agreed (wrongly),
-    I **dropped** it.
+    we **dropped** it.
   - **Model-free comparisons.** Two entries one soldier apart differ by exactly that move's value
     (±0.001 rounding). **Kept**
   - **Separability tricks.** Moves on different castles add exactly, which gave:
@@ -177,7 +177,7 @@
     - lower bounds (castle 5 going 6 → 7 is worth at least +0.07)
 
     **Kept**
-  - **Adaptive design.** After each result I re-aimed the next test, and every test was one step
+  - **Adaptive design.** After each result we re-aimed the next test, and every test was one step
     from the best measured split *and* a real candidate. **Kept**
   - **Game 1 path:**
     - first, broad family tests: 33-7-1-10-49 (7.05) and 1-47-19-3-30 (6.01)
@@ -209,11 +209,11 @@
 
   - **Final picks:** **4-7-35-47-7** (Game 1, #30 of 5,907) and **16-2-2-2-78** (Game 2, about #155
     of 5,378).
-  - **Anti-copier rule reversed.** I'd planned to take the variant one soldier above the visible
+  - **Anti-copier rule reversed.** We'd planned to take the variant one soldier above the visible
     clusters if it measured within 0.01 of the best. The cluster data showed copying wasn't
-    happening, so I took the higher measured score.
-  - **Untested ideas I didn't submit:** 82 on castle 5 in Game 2 (the trend was still paying, but
-    Game 2 has cliffs), and the unknown #1 Game 1 split, 0.022 above mine.
+    happening, so we took the higher measured score.
+  - **Untested ideas we didn't submit:** 82 on castle 5 in Game 2 (the trend was still paying, but
+    Game 2 has cliffs), and the unknown #1 Game 1 split, 0.022 above ours.
 
   ## 9. Engineering
 

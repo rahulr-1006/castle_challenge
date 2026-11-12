@@ -279,7 +279,7 @@ def fit_board(board_scores, lib, anchors=(), sigmas=(0.08, 0.04, 0.02, 0.01), it
 
 def refit_with_sharp(board_scores, rng, anchors=(), rounds=2, **kw):
     """Fit, then rebuild the 'sharp' players as noisy best responses to the fitted field
-    and fit again. Sharp players respond to the real field, not to my prior about it."""
+    and fit again. Sharp players respond to the real field, not to our prior about it."""
     lib = build_library(rng)
     fit = fit_board(board_scores, lib, anchors, **kw)
     for _ in range(rounds - 1):

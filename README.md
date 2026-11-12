@@ -1,7 +1,7 @@
 # Castle Challenge
 
-My work on Sequoia's No Limit Castle Challenge, a Colonel Blotto variant. It happened in two
-phases. First I simulated the field and picked an allocation blind. Then I found the public live
+Our work on Sequoia's No Limit Castle Challenge, a Colonel Blotto variant. It happened in two
+phases. First we simulated the field and picked an allocation blind. Then we found the public live
 leaderboard and switched to measuring the field instead of modeling it. The second phase is most of
 this repo, and it's where the score improved.
 
@@ -12,7 +12,7 @@ this repo, and it's where the score improved.
 | **Game 1** (head to head) | **#16** | **#70** | 9.25 | 9.29 |
 | **Game 2** (4-player groups) | **#160** | **#638** (team) | 5.19 (team) | 5.66 |
 
-My teammate Jay Katyan and I entered as a team. Our best Game 2 finish was Jay's entry at #638.
+This was a team effort: Jay Katyan and Rahul Ramakrishnan. Our best Game 2 finish was Jay's entry at #638.
 
 <p>
   <img src="docs/img/final_game1_rank70.png" alt="Final Game 1 card: #70, score 9.25" width="49%">
@@ -25,7 +25,7 @@ measured split peaked at #16 on the live board. It slipped to #70 as late entrie
 **Game 2 didn't.** On the live board the final pick scored 5.62-5.70. In final scoring it got 5.18,
 about where the blind pick had been on the live board. The #1 score also fell, from about 5.83
 to 5.66. A Game 2 score depends on which three opponents you're grouped with, so the final field
-and final groups decided it. My measurements on the live board didn't carry over. Game 1 scoring
+and final groups decided it. Our measurements on the live board didn't carry over. Game 1 scoring
 separates by castle and doesn't have this problem
 (see [Why Game 2 was so hard](#why-game-2-was-so-hard)).
 
@@ -141,30 +141,30 @@ solved in its dual by damped Newton.
 
 Game 1 depends only on how many soldiers the field sends to each castle, so the best response to any
 assumed field is exact (a knapsack over the five castles), and every one of the 4.6M legal
-allocations can be checked. I modeled the field as a mix of:
+allocations can be checked. We modeled the field as a mix of:
 
 - habit players (round numbers, even splits, "stack the 5")
 - level-k thinkers
 - equilibrium players (fictitious play, which matches the known continuous Blotto solution)
 - crowd-modelers
 
-That gave 180 "worlds", which I weighted with a prior. I wrote two priors: a sharp main one and a
+That gave 180 "worlds", which we weighted with a prior. We wrote two priors: a sharp main one and a
 skeptical baseline. The full study is in `sim/experiments.py` and `results/simulation/`.
 
-- **Regret.** I scored every split in every world, then compared the three choice rules from
+- **Regret.** We scored every split in every world, then compared the three choice rules from
   [The math](#the-math).
   - The Bayes pick (8-17-30-44-1, 8.69 expected) and the minimax-regret pick (5-19-31-45-0, 8.63)
     both conceded castle 5.
   - The maximin pick (5-5-28-44-18) hedged with 18 on castle 5 and lost 0.74 on average.
-  - I went with Bayes.
+  - We went with Bayes.
 - **Crossover.** A shallow enough field flips the answer to stacking castle 5. That bet was
   lopsided, though: conceding castle 5 cost 0.08 if wrong, and stacking it cost 0.60.
 - **Focal points.** One soldier above crowded round numbers flips many castles. That idea came
   back later as "one above the cluster."
-- **Game 2.** I tried replicator dynamics on a fixed pool of plans. Its equilibrium stayed
+- **Game 2.** We tried replicator dynamics on a fixed pool of plans. Its equilibrium stayed
   exploitable: a best response beat it by 3.7 payout points. Fictitious play with a search-based
   best response cut that gap to 0.38.
-- **Counter-players.** I added players one level above the crowd-modelers, at 10% and 25% of the
+- **Counter-players.** We added players one level above the crowd-modelers, at 10% and 25% of the
   field. Game 1 held up. Game 2 slipped at 25%.
 
 The answer was to concede castle 5 and win the other four (8-17-30-44-1).
@@ -186,7 +186,7 @@ Three facts make it useful:
 1. **An exact tie means an identical split.** A Game 1 score is an exact function of the split, so a
    cluster of entries with the same score to three decimals is a group of copies. One team posted
    5-7-35-47-6. Its cluster held 22-24 entries the whole time, which confirmed the split.
-2. **Known splits are anchors.** Any entry whose split I know gives me (split, live score). That
+2. **Known splits are anchors.** Any entry whose split we know gives us (split, live score). That
    pins down the field far better than the score histogram does.
 3. **Score changes reveal newcomers.** If an anchor's score moves between snapshots, the change is
    its total payoff against the people who joined in between. That tells you how newcomers play,
@@ -194,8 +194,8 @@ Three facts make it useful:
 
 ### Why the score histogram alone isn't enough
 
-My first instinct was to fit a model of the field to the shape of the score histogram. On synthetic
-leaderboards where I knew the true field, that fit picked allocations that lost 1-2.5 points. Many
+Our first instinct was to fit a model of the field to the shape of the score histogram. On synthetic
+leaderboards where we knew the true field, that fit picked allocations that lost 1-2.5 points. Many
 different fields produce nearly the same histogram. Anchors don't have that problem. With about 40
 anchors near the top, the loss on synthetic boards dropped to 0.02 points.
 
@@ -216,13 +216,13 @@ sharp-heavy, equilibrium-heavy, habit-heavy).
   its prior that reproduces every anchor's live score exactly.
 - **Weight by holdout accuracy.** Each world's weight comes from leave-one-out error: refit without
   one anchor, then check how well the world predicts it.
-- **Add hidden late entrants.** Across the worlds I sample 300 scenarios of late entrants I can't
-  see: 100-600 of them, 20-60% of whom track the board like I was.
+- **Add hidden late entrants.** Across the worlds we sample 300 scenarios of late entrants we can't
+  see: 100-600 of them, 20-60% of whom track the board like we were.
 - **Rank by mean score.** Candidates are ranked by their average score across all scenarios.
 
-Two ways of picking worlds that I tested:
+Two ways of picking worlds that we tested:
 
-- **Match the full score histogram.** For each world I compared its simulated score distribution
+- **Match the full score histogram.** For each world we compared its simulated score distribution
   with the real board's (Wasserstein distance).
   - Habit-heavy worlds fit worst (0.16-0.18 off) and sharp-heavy worlds fit best (0.10).
   - Weighting by histogram fit didn't change the pick. It's a useful sanity check, not a decider.
@@ -234,15 +234,15 @@ Two ways of picking worlds that I tested:
 
 ### Accounting for LLM randomness
 
-Lots of applicants paste the prompt into a chatbot, and chatbots don't pick numbers at random. I
+Lots of applicants paste the prompt into a chatbot, and chatbots don't pick numbers at random. We
 collected 156 real chatbot answers to the prompt (credits below). They were very repetitive:
 
 - Only 98 were distinct.
 - 7-13-20-27-33 alone was 18% of them (28 of 156).
 - The rest clustered on "nice" arithmetic like 10-15-20-25-30 or 5-10-20-30-35.
 
-I added them to every world as their own population (10% of the field) instead of treating them as
-noise. I also tried to find them on the board: their predicted scores do land on exact-tie spikes
+We added them to every world as their own population (10% of the field) instead of treating them as
+noise. We also tried to find them on the board: their predicted scores do land on exact-tie spikes
 (7-13-20-27-33 is predicted at 6.660, and there's a spike at 6.663). But there are 49 spikes between
 6.5 and 7.2, so a match is weak evidence: 10 of the top 20 answers matched within 0.003, against
 about 7 expected by chance (p ≈ 0.13).
@@ -264,7 +264,7 @@ against the real field. Moves on different castles add exactly. A test entry tha
 measured split by one soldier therefore measures that move exactly (to ±0.001, from rounding), with
 no model involved.
 
-I designed the test entries this way. Each one was also a real candidate for the final pick, one
+We designed the test entries this way. Each one was also a real candidate for the final pick, one
 step from the best measured split. Measured effects:
 
 | Change | From → to | Effect |
@@ -288,23 +288,23 @@ Separability also produced results without any new entry:
   castle 5 is worth at least +0.07 (the castle 4 part of that move can only cost). That's why
   4-7-35-47-7 was the right next test.
 
-I also tried choosing tests by value of information across the 12 worlds. It favored splits that
+We also tried choosing tests by value of information across the 12 worlds. It favored splits that
 told the worlds apart, not splits that could win. Since the worlds had all agreed (wrongly) an hour
-earlier, I dropped it in favor of the rule above: every test should be a step from the best measured
+earlier, we dropped it in favor of the rule above: every test should be a step from the best measured
 split.
 
 ### Other people tracking the board
 
-I assumed I wasn't the only one waiting and tracking the board, so the late-entrant scenarios
-include sharp players who best-respond to it at one, two and three levels deep. I also tracked what
+We assumed we weren't the only ones waiting and tracking the board, so the late-entrant scenarios
+include sharp players who best-respond to it at one, two and three levels deep. We also tracked what
 actually happened:
 
 - **Newcomers.** From anchor score changes, roughly 12% of new entries behaved like board trackers.
-  In one 6-hour window, 2 of the 29 newcomers who weren't my test entries landed exactly on the
+  In one 6-hour window, 2 of the 29 newcomers who weren't our test entries landed exactly on the
   #1 score.
-- **Copying.** I checked the anti-copier argument ("late entrants will copy the visible top split,
+- **Copying.** We checked the anti-copier argument ("late entrants will copy the visible top split,
   so sit one soldier above it") against the copy clusters. Over 9 hours, the posted split's cluster
-  stayed at 22-24 and 4-7-35-47-7's at 15-16. Copying wasn't happening, so I took the higher
+  stayed at 22-24 and 4-7-35-47-7's at 15-16. Copying wasn't happening, so we took the higher
   measured score (4-7-35-47-7, 9.287) over its anti-copier variant (3-7-36-47-7, 9.277).
 - **Testing teams.** Some groups ran 10-20 test entries each. One team's 15 Game 1 entries all sit
   in the top 150, while they threw away their Game 2 entries. Another group holds several spots in the
@@ -313,7 +313,7 @@ actually happened:
 ### Validation
 
 `live/validate.py` builds synthetic leaderboards with a known field and hidden late entrants, and
-gives each method only what I'd have had: anchors, posted splits and scores. Median final rank over
+gives each method only what we'd have had: anchors, posted splits and scores. Median final rank over
 12 trials:
 
 | Method | Median rank |
@@ -367,14 +367,14 @@ What did work, all measured (averages over board updates):
 | drop the 2s for castle 5 | 20-2-2-2-74 → 20-0-0-0-80 | −2.53 |
 
 Game 2 is a race for castle 5 among the people who stack it, with cheap 2s to sweep the middle
-castles they leave empty. The race was still paying at 78. 82 was the next step, but I didn't submit
+castles they leave empty. The race was still paying at 78. 82 was the next step, but we didn't submit
 anything untested in a game with cliffs like that.
 
 ## After the deadline: can you read other players' splits off the board?
 
-An idea I didn't get to during the challenge: use the anchors and fitted worlds to infer what
+An idea we didn't get to during the challenge: use the anchors and fitted worlds to infer what
 *other* entries played, with a confidence score, from nothing but their Game 1 score. Knowing the
-#1 split, for instance, would have been worth testing against. I built it afterwards in
+#1 split, for instance, would have been worth testing against. We built it afterwards in
 `live/infer_splits.py`.
 
 ### The method
@@ -391,17 +391,17 @@ $$P(a \mid s) \;\propto\; \sum_m \pi_m \Big[ (1 - \epsilon)\, w_m(a) + \frac{\ep
   score, impossible anywhere else.
 
 Sorting each world's 4.6M predicted scores once makes every query a single slice. That made it a
-few seconds of compute, not the long grid search I expected.
+few seconds of compute, not the long grid search we expected.
 
 $\epsilon$ and $\sigma$ are tuned per rank band on 8 synthetic boards with a known field. Each
-board has anchors shaped like mine: five corners, a posted split, and 10 test entries climbing
+board has anchors shaped like ours: five corners, a posted split, and 10 test entries climbing
 from it. The settings are tuned by log score of the true split, a proper scoring rule, so
 confident misses are punished. Then they're tested on the 23 real anchors, each held out in
 turn. The real anchors are never used for tuning.
 
 ### Is the information there? Yes, at the top
 
-With the *true* field known, I counted how many legal splits share each entry's rounded score on
+With the *true* field known, we counted how many legal splits share each entry's rounded score on
 synthetic boards:
 
 | Ranks | Legal splits sharing the score (median) |
@@ -419,7 +419,7 @@ needs predicted scores good to about 0.0005, though, the site's rounding.
 ### Can this model read it? No
 
 With each real anchor held out, the fitted worlds missed its score by 0.006-0.06 points near the
-top (ranks 32-394) and 0.06-0.63 below. Even where my test entries were densest, that's about 60×
+top (ranks 32-394) and 0.06-0.63 below. Even where our test entries were densest, that's about 60×
 too coarse. The posterior spreads over about 150 plausible splits at the top and thousands
 mid-board.
 
@@ -458,14 +458,14 @@ score 9.227, 0.084 below #1. A wide error bar plus a big prior weight is enough 
 you've already measured somewhere else. Measured splits now only count at their measured score.
 
 **Takeaway:** the board holds enough information to name the top splits. Reading it would need a
-field model about 60× more precise than one built from 23 anchors. One input I didn't use is
+field model about 60× more precise than one built from 23 anchors. One input we didn't use is
 cluster size. A 35-way exact tie mid-board is almost certainly a copied chatbot or round-number
 split, but the model ignores how many entries share a score. Modeling that would help the big
 mid-board clusters, not the top.
 
-## Everything I tried
+## Everything we tried
 
-**Kept** means it shaped the final picks, **Dropped** means I abandoned it, and **Check** means it
+**Kept** means it shaped the final picks, **Dropped** means we abandoned it, and **Check** means it
 ran as a sanity check without deciding anything. More detail on each is in
 [`docs/everything_we_tried.md`](docs/everything_we_tried.md).
 
@@ -517,7 +517,7 @@ ran as a sanity check without deciding anything. More detail on each is in
 | Exact likelihood for measured splits | Kept (fix) | Stopped the model claiming a measured split at the wrong score |
 | Cluster size as evidence of a copied split | Untried | Next lever, for mid-board copy clusters only |
 
-## What I'd take away
+## What we'd take away
 
 - Measure the field instead of modeling it, whenever the scoring lets you. Separable scoring turns
   each one-soldier test into an exact measurement.
@@ -572,7 +572,7 @@ published.
 
 ## Credits
 
-Public splits and data I used as anchors or populations:
+Public splits and data we used as anchors or populations:
 
 - [blobberus/CASTLE](https://github.com/blobberus/CASTLE): chatbot answers to the prompt
 - [AdenNowell/Allocation-Study-Sequoia](https://github.com/AdenNowell/Allocation-Study-Sequoia)
